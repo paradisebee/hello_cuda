@@ -57,9 +57,9 @@ __global__ void etfStraight(
     // get parallel line centered at current point
     double ctrp[2] = {y,x};
     // direction vector
-    double ctrV[2] = {tx[y*width+x],ty[y*width+x]};
+    double vec[2] = {tx[y*width+x],ty[y*width+x]};
     double p_line[2][2*LEN+1] = {0.0};
-    line2D(p_line, ctrp, ctrV);
+    line2D(p_line, ctrp, vec);
     
     /*
     int idx_line[2][2*LEN+1] = {0};
@@ -77,7 +77,7 @@ __global__ void etfStraight(
             int posx = (int)(p_line[0][i]+0.5);
             int posy = (int)(p_line[1][i]+0.5);
             int ind = posy*width+posx; 
-            //double ctrV[2] = {tx[y*width+x],ty[y*width+x]};
+            double ctrV[2] = {tx[y*width+x],ty[y*width+x]};
             double winV[2] = {tx[ind],ty[ind]};
             double wd = dire_weight(ctrV, winV); 
             sum_wd += wd;

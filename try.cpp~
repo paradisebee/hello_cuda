@@ -1,5 +1,7 @@
 #include <iostream>
+#include <math.h>
 
+const int len = 5;
 using namespace std;
 
 class poop{
@@ -22,28 +24,22 @@ int main()
     cout << ptr->val1 << ", " << ptr->val2 << ", " << ptr->str1;
     cout << endl;
     */
+    double out[2][2*len+1] = {0.0};
 
-    double win_tx[9] = {0.0};
-    double win_ty[9] = {0.0};
-    for (int i = 0; i < 9; i++){
-        win_tx[i] = 2.0*i;
-        win_ty[i] = i/2.0;
-    }
-    double winxy[18];
-    for(int i = 0; i < 18; i++){
-        if (i/9==0){
-            winxy[i] = win_tx[i];
-        }
-        else{
-            winxy[i] = win_ty[i-9];
-        }
+    double x = 5.0;
+    double y = x;
+    double gx = 0.2169;
+    double gy = 0.9762;
 
+    for (int i = -len; i <= len; i++){
+        out[0][i+len] = x+i*gx;
+        out[1][i+len] = y+i*gy;
     }
 
-    for (int i = 0; i < 18; i++){
-        cout << winxy[i] << ", ";
-        if (i/9==0)
-            cout << endl;
+    int dline[2][2*len+1] = {0};
+    for (int i = 0; i < 2*len+1; i++){
+        dline[0][i] = (int)(out[0][i]+0.5);
+        dline[1][i] = (int)(out[1][i]+0.5);
     }
     return 0;
 }

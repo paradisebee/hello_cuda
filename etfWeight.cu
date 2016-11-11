@@ -1,3 +1,4 @@
+#include <math.h>
 
 const int LEN = 4;
 
@@ -13,9 +14,9 @@ __device__ void line2D(double out[][2*LEN+1], double *ctrp, double *vec) {
     }
 }
 
-__global__ void etfCross(
+__global__ void etfWeight(
                 double *xout, double *yout, double *outmag,
-                double *tx, double *ty.
+                double *tx, double *ty,
                 double *im, double *gmag,
                 int height, int width) {
 
@@ -27,12 +28,29 @@ __global__ void etfCross(
     if (x>=width || y>=height) {
         return;
     }
-
-    // get orthgonal line centered at current point
+    // get parallel line centered at current point
     double ctrp[2] = {y,x};
-    // vector perpendicular to the direction vector
-    double vec[2] = {-ty[y*width+x], tx[y*width+x]};
+    // direction vector
+    double vec[2] = {tx[y*width+x], ty[y*width+x]};
     double p_line[2][2*LEN+1] = {0.0};
     line2D(p_line, ctrp, vec);
 
+    double sum_inten = 0.0;
+    for(int i = 0; i < 2*LEN+1; i++) {
+        if (p_line[0][i]>=0 && p_line[0][i]<width &&
+            p_line[1][i]>=0 && p_line[1][i]<height){
+            int posx = (int)(p_line[0][i]+0.5);
+            int posy = (int)(p_line[1][i]+0.5);
+            int ind = posy*width+posx;            
+            if (ind<width*height){
+                sum_inten += im[ind];
+            }
+        }
+    }
+    
+    __syncthreads();
+
+    outmag[y*width+x] = sum_inten/(2*LEN+1);
+    xout[y*width+x] = tx[y*width+x];
+    yout[y*width+x] = ty[y*width+x];
 }
