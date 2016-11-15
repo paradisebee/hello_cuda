@@ -28,6 +28,7 @@ __global__ void etfWeight(
     if (x>=width || y>=height) {
         return;
     }
+    /*
     // get parallel line centered at current point
     double ctrp[2] = {y,x};
     // direction vector
@@ -47,6 +48,59 @@ __global__ void etfWeight(
             }
         }
     }
+    */
+
+    // New try: trace forward and backward for points on the line defined 
+    // by the ETF calculation.
+    double p_line[2][2*LEN+1] = {0.0};
+    double cur_ctrp[2] = {y, x};
+    double cur_pos = cur_ctrp[0]*width+cur_ctrp[1];
+    double cur_vec[2] = {tx[cur_pos], ty[cur_pos]}
+    for(int i = 1; i <= LEN; i++) {
+
+        int posx = (int)(cur_ctrp[1]+cur_vec[0]+0.5);
+        int posy = (int)(cur_ctrp[0]+cur_vec[1]+0.5);
+        
+        p_line[0][LEN+i] = posx;
+        p_line[1][LEN+i] = posy;
+
+        // go to next point
+        cur_ctrp = {posy, posx};
+        cur_pos = cur_ctrp[0]*width+cur_ctrp[1];
+        cur_vec = {tx[cur_pos], ty[cur_pos]};
+
+    }
+
+    // reset starting point
+    cur_ctrp = {y, x};
+    cur_pos = cur_ctrp[0]*width+cur_ctrp[1];
+    cur_vec = {tx[cur_pos], ty[cur_pos]};
+
+    for(int i = -1; i >= -LEN; i--) {
+        
+        int posx = (int)(cur_ctrp[1]-cur_vec[0]+0.5);
+        int posy = (int)(cur_ctrp[0]-cur_vec[1]+0.5);
+        
+        p_line[0][LEN+i] = posx;
+        p_line[1][LEN+i] = posy;
+
+        // go to next point
+        cur_ctrp = {posy, posx};
+        cur_pos = cur_ctrp[0]*width+cur_ctrp[1];
+        cur_vec = {tx[cur_pos], ty[cur_pos]};
+
+    )
+    
+    // for each point on the new line, calculate the orthogonal line
+    for(int i = 0; i < 2*LEN+1; i++) {
+        cur_ctrp = {p_line[1][i], ;
+
+
+
+    }
+
+
+
     
     __syncthreads();
 
